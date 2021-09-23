@@ -49,7 +49,7 @@ class CarrotEnv(gym.Env):
         self.sim.update(action)
         next_image = image_transform(self.sim.get_current_image())
         reward = lyapunov(next_image)
-        obs = process_obs(next_image)
+        obs = process_obs(255.0 * next_image)
         self.episode_step +=  1
         if self.episode_step == self.episode_length:
             done = True

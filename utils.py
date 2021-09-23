@@ -19,11 +19,11 @@ from torch.autograd import Variable
 def process_obs(img):
     H = 32
     W = 32
-    img = cv2.resize(img, (W, H), interpolation=cv2.INTER_AREA)
+    img = cv2.resize(img.astype(np.uint8), (W, H), interpolation=cv2.INTER_AREA)
     if len(img.shape)==3:
-        obs_cur = img.astype(np.float)[:, :, 0]
+        obs_cur = img.astype(np.float)[:, :, 0]/255
     else:
-        obs_cur = img
+        obs_cur = img/255
 
     x = np.linspace(0.5, W - 0.5, W) / W
     y = np.linspace(0.5, H - 0.5, H) / H
