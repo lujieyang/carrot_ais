@@ -352,8 +352,8 @@ class PPO:
             loss.mean().backward()
             self.optimizer.step()
 
-            self.ais_optimizer.zero_grad
-            ais_loss.mean().backward()
+            self.ais_optimizer.zero_grad()
+            ais_loss.backward()
             self.ais_optimizer.step()
             
         # Copy new weights into old policy
@@ -362,13 +362,11 @@ class PPO:
         # clear buffer
         self.buffer.clear()
     
+        print('r loss: {}, z loss: {}, policy loss: {}'.format(r_loss, z_loss, loss.mean()))
     
-    def save(self, checkpoint_path):
+    def save(self, checkpoint_path, compression_path):
         torch.save(self.policy_old.state_dict(), checkpoint_path)
-        torch.save(self.compression.state_dict(), checkpoint_path)
-        torch.save(self.dynamics.state_dict(), checkpoint_path)
-        torch.save(self.reward.state_dict(), checkpoint_path)
-        
+        torch.save(self.compression.state_dict(), compression_path)
    
 
     def load(self, checkpoint_path):

@@ -13,6 +13,7 @@ from PPO import PPO
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from env.carrot_env import CarrotEnv
+from utils import set_seed
 
 
 
@@ -34,7 +35,7 @@ def train(nz, seed):
 
     print_freq = max_ep_len * 10        # print avg reward in the interval (in num timesteps)
     log_freq = max_ep_len * 2           # log avg reward in the interval (in num timesteps)
-    save_model_freq = int(1e5)          # save model frequency (in num timesteps)
+    save_model_freq = 5000         # save model frequency (in num timesteps)
 
     action_std = 0.6                    # starting std for action distribution (Multivariate Normal)
     action_std_decay_rate = 0.05        # linearly decay action_std (action_std = action_std - action_std_decay_rate)
@@ -62,6 +63,7 @@ def train(nz, seed):
     lr_ais = 0.001
 
     random_seed = seed         # set random seed if required (0 = no random seed)
+    set_seed(random_seed)
 
     #####################################################
 
@@ -124,6 +126,7 @@ def train(nz, seed):
 
 
     checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    compression_path = directory + "compression_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
     print("save checkpoint path : " + checkpoint_path)
 
     #####################################################
@@ -266,7 +269,7 @@ def train(nz, seed):
             if time_step % save_model_freq == 0:
                 print("--------------------------------------------------------------------------------------------")
                 print("saving model at : " + checkpoint_path)
-                ppo_agent.save(checkpoint_path)
+                ppo_agent.save(checkpoint_path, compression_path)
                 print("model saved")
                 print("Elapsed Time  : ", datetime.now().replace(microsecond=0) - start_time)
                 print("--------------------------------------------------------------------------------------------")
