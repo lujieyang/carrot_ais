@@ -362,7 +362,7 @@ class PPO:
         # clear buffer
         self.buffer.clear()
     
-        print('r loss: {}, z loss: {}, policy loss: {}'.format(r_loss, z_loss, loss.mean()))
+        # print('r loss: {}, z loss: {}, policy loss: {}'.format(r_loss, z_loss, loss.mean()))
     
     def save(self, checkpoint_path, compression_path):
         torch.save(self.policy_old.state_dict(), checkpoint_path)

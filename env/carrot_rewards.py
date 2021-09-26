@@ -31,8 +31,6 @@ def lyapunov_measure(tensor):
     #     for j in range(32):
     #         radius = np.linalg.norm(np.array([i - 15.5, j - 15.5]), ord=2)
     #         measure[i,j] = np.maximum(radius - pixel_radius, 0)
-    # # A number here is chosen to approximately normalize the reward in between [0,1]
-    # measure = measure *10
     measure = np.load("env/H3.npy")/100
 
     if tensor == True:
@@ -57,7 +55,7 @@ def lyapunov(image_normalized, tensor=False):
         else:
             V = np.sum(np.multiply(image_normalized, V_measure))
             image_sum = np.sum(image_normalized)
-        r = V / image_sum
+        r = V / (image_sum +1e-7)
 
     elif len(image_normalized.shape) == 3:
         # image_normalized: B x 32 x 32
@@ -68,6 +66,6 @@ def lyapunov(image_normalized, tensor=False):
         else:
             V = np.sum(np.multiply(image_normalized, V_measure[None, :, :]), axis=(1, 2))
             image_sum = np.sum(image_normalized, axis=(1, 2))
-        r = V / image_sum
+        r = V / (image_sum + 1e-7)
 
     return r

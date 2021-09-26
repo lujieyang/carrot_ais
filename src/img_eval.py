@@ -11,10 +11,10 @@ from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.utils import obs_as_tensor
 import cv2
 
-def visualize(env, model, beta=0.95):
+def visualize(env, model, seed, beta=0.95):
     N = 30 
 
-    model_folder = 'video/sb3/'
+    model_folder = 'results/sb3/seed_{}'.format(seed)
 
     # init obs
     obs = env.reset()
@@ -22,13 +22,11 @@ def visualize(env, model, beta=0.95):
     imgs_mpc_record = np.zeros((N, 256, 256))
 
     reward_episode = []
-    actions = []
     for j in range(N):
         imgs_mpc_record[j] = env.render()
         action, _ = model.predict(obs)
         obs, reward, _, _ = env.step(action)
         reward_episode.append(reward)
-        actions.append(action)
     
     R = 0
     for i, r in enumerate(reward_episode[::-1]):
@@ -38,10 +36,6 @@ def visualize(env, model, beta=0.95):
 
     path = os.path.join(model_folder, 'video')
     os.system('mkdir -p ' + path)
-
-    with open(path + "/actions.csv", 'w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(actions)
 
     video_path = path + '.avi'
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
@@ -62,7 +56,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="Random seed of the experiment", default=42)
     parser.add_argument("--A2C", action="store_true")
-    parser.add_argument("--group",action="store_true")
     args = parser.parse_args()
     # set device to cpu or cuda
     device = torch.device('cpu')
@@ -79,4 +72,4 @@ if __name__ == '__main__':
     else:
         model = PPO.load(model_dir + "PPO_{}".format(args.seed), env=env)
 
-    visualize(env, model)
+    visualize(env, model, args.seed)

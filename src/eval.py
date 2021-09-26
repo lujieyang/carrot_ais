@@ -15,7 +15,7 @@ import cv2
 def visualize(env, nz, seed, beta=0.95):
     N = 30
 
-    env_name = "Carrot"
+    env_name = "Carrot"   #"Carrot_circle"
     directory = "PPO_preTrained"
     if not os.path.exists(directory):
           os.makedirs(directory)
@@ -28,11 +28,9 @@ def visualize(env, nz, seed, beta=0.95):
     random_seed = seed
     action_std = 0.6
     nf = 64
-    run_num_pretrained = 0
 
-
-    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
-    compression_path = directory + "compression_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, nz)
+    compression_path = directory + "compression_{}_{}_{}.pth".format(env_name, random_seed, nz)
 
     policy = ActorCritic(nz, action_dim, False, action_std).to(device)
     policy.load_state_dict(torch.load(checkpoint_path, map_location=lambda storage, loc: storage))
@@ -40,7 +38,7 @@ def visualize(env, nz, seed, beta=0.95):
     compression = CompressionCNN(nf, nz).to(device)
     compression.load_state_dict(torch.load(compression_path, map_location=lambda storage, loc: storage))
 
-    model_folder = 'video/'
+    model_folder = 'results/nz_{}_seed_{}/'.format(nz, seed) + env_name +"/"
 
     # init obs
     obs = env.reset()
@@ -48,13 +46,12 @@ def visualize(env, nz, seed, beta=0.95):
     imgs_mpc_record = np.zeros((N, 256, 256))
 
     reward_episode = []
-    actions = []
     for j in range(N):
         imgs_mpc_record[j] = env.render()
 
         state = torch.FloatTensor(obs).to(device).reshape(1, 3, 32, 32)
         ais = compression(state).detach()
-        action, action_logprob = policy.act(ais)
+        action, _ = policy.act(ais)
         action = action.item()
         obs, reward, _, _ = env.step(action)
         reward_episode.append(reward)
@@ -69,10 +66,6 @@ def visualize(env, nz, seed, beta=0.95):
 
     path = os.path.join(model_folder, 'video')
     os.system('mkdir -p ' + path)
-
-    with open(path + "/actions.csv", 'w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(actions)
 
     video_path = path + '.avi'
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
