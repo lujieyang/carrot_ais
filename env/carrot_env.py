@@ -35,6 +35,20 @@ class CarrotEnv(gym.Env):
                                     -0.3 + 0.6 / (y_grid - 1) * l,
                                 ]
                             )
+        # num_grid = 4
+        # for i in range(num_grid):
+        #     for j in range(num_grid):
+        #         for k in range(num_grid):
+        #             for l in range(num_grid):
+        #                 if (i, j) != (k, l) and (i-k)**2 + (j-l)**2 <= (num_grid-1)**2/2:
+        #                     action_table.append(
+        #                         [
+        #                             -0.4 + 0.8 / (num_grid - 1) * i,
+        #                             -0.4 + 0.8 / (num_grid - 1) * j,
+        #                             -0.4 + 0.8 / (num_grid - 1) * k,                                                
+        #                             -0.4 + 0.8 / (num_grid - 1) * l,                        
+        #                             ]
+        #                         )
         self.action_table = np.array(action_table)
         self.action_space = spaces.Discrete(self.action_table.shape[0])
         self.observation_space = spaces.Box(

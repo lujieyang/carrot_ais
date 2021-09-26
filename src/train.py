@@ -26,11 +26,11 @@ def train(nz, seed):
 
     ####### initialize environment hyperparameters ######
 
-    env_name = "Carrot"
+    env_name = "Carrot_circle"
 
     has_continuous_action_space = False  # continuous action space; else discrete
 
-    max_ep_len = 50                   # max timesteps in one episode
+    max_ep_len = 100                   # max timesteps in one episode
     max_training_timesteps = int(3e6)   # break training loop if timeteps > max_training_timesteps
 
     print_freq = max_ep_len * 10        # print avg reward in the interval (in num timesteps)
@@ -114,8 +114,6 @@ def train(nz, seed):
 
     ################### checkpointing ###################
 
-    run_num_pretrained = 0      #### change this to prevent overwriting weights in same env_name folder
-
     directory = "PPO_preTrained"
     if not os.path.exists(directory):
           os.makedirs(directory)
@@ -125,8 +123,8 @@ def train(nz, seed):
           os.makedirs(directory)
 
 
-    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
-    compression_path = directory + "compression_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, nz)
+    compression_path = directory + "compression_{}_{}_{}.pth".format(env_name, random_seed, nz)
     print("save checkpoint path : " + checkpoint_path)
 
     #####################################################
