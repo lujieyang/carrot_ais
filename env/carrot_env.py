@@ -39,8 +39,8 @@ class CarrotEnv(gym.Env):
         self.action_space = spaces.Discrete(self.action_table.shape[0])
         self.observation_space = spaces.Box(
             low=0,
-            high=1, shape=(self.observation_dim,),
-            dtype=np.float32
+            high=255, shape=(32, 32, 1),
+            dtype=np.uint8
         )
 
     def step(self, action_ind):
@@ -49,7 +49,7 @@ class CarrotEnv(gym.Env):
         self.sim.update(action)
         next_image = image_transform(self.sim.get_current_image())
         reward = lyapunov(next_image)
-        obs = process_obs(255.0 * next_image)
+        obs = process_obs((255.0 * next_image).astype(np.uint8))
         self.episode_step +=  1
         if self.episode_step == self.episode_length:
             done = True
@@ -59,7 +59,7 @@ class CarrotEnv(gym.Env):
         self.episode_step = 0
         self.sim.refresh()
         img = image_transform(self.sim.get_current_image())
-        obs = process_obs(img)
+        obs = process_obs((255.0 * img).astype(np.uint8))
         return obs
 
     def render(self, mode='human'):
@@ -73,5 +73,4 @@ class CarrotEnv(gym.Env):
 
     def close(self):
         pass
-
 
